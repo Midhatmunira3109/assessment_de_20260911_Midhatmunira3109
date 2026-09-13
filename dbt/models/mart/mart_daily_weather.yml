@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: mart_daily_weather
+    description: >
+      Business-facing daily weather mart. Extends the staging layer with
+      temperature range, 7-day rolling precipitation average, and
+      human-readable classification labels. Materialised as a table for
+      fast downstream consumption.
+    columns:
+      - name: weather_id
+        description: "Surrogate key (city + date)."
+        tests:
+          - unique
+          - not_null
+
+      - name: city
+        description: "City name."
+        tests:
+          - not_null
+
+      - name: weather_date
+        description: "Date of observation."
+        tests:
+          - not_null
+
+      - name: temp_max_c
+        description: "Daily maximum temperature in °C."
+
+      - name: temp_min_c
+        description: "Daily minimum temperature in °C."
+
+      - name: temp_range_c
+        description: "Difference between max and min temperature."
+
+      - name: temp_avg_c
+        description: "Simple average of max and min temperature."
+
+      - name: precipitation_mm
+        description: "Total precipitation in mm."
+
+      - name: precip_7d_rolling_avg_mm
+        description: "7-day rolling average precipitation (per city, ordered by date)."
+
+      - name: precipitation_class
+        description: "Categorical label: rainy (>5 mm), trace (0–5 mm), dry (0 mm)."
+        tests:
+          - accepted_values:
+              values: ['rainy', 'trace', 'dry']
+
+      - name: temperature_label
+        description: "Human-readable temperature category."
+        tests:
+          - not_null
+
+      - name: windspeed_max_kmh
+        description: "Maximum 10 m wind speed in km/h."

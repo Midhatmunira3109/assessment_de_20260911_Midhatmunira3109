@@ -1,0 +1,22 @@
+FROM apache/airflow:2.9.3-python3.11
+
+USER root
+RUN apt-get update && apt-get install -y git python3-venv && apt-get clean
+
+# Install dbt in isolated venv as root, then give ownership to airflow.
+# Pin typing_extensions>=4.6.0 inside the venv explicitly — mashumaro (pulled
+# in by dbt-core) requires evaluate_forward_ref which landed in 4.6.0.
+# Without this pin the venv can resolve typing_extensions from the Airflow
+# user-site (/home/airflow/.local) which ships an older version, causing an
+# ImportError at dbt startup.
+RUN python -m venv /opt/dbt-venv && \
+    /opt/dbt-venv/bin/pip install --no-cache-dir --upgrade pip && \
+    /opt/dbt-venv/bin/pip install --no-cache-dir "typing_extensions>=4.6.0" && \
+    /opt/dbt-venv/bin/pip install --no-cache-dir "dbt-postgres==1.8.2" "dbt-core<2.0.0" && \
+    chown -R airflow:root /opt/dbt-venv
+
+USER airflow
+
+COPY requirements.txt /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
+

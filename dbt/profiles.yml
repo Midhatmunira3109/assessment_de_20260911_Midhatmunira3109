@@ -1,0 +1,12 @@
+weather_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('PIPELINE_DB_HOST', 'localhost') }}"
+      port: "{{ env_var('PIPELINE_DB_PORT', '5432') | int }}"
+      user: "{{ env_var('PIPELINE_DB_USER', 'weather_user') }}"
+      password: "{{ env_var('PIPELINE_DB_PASSWORD', 'weather_pass') }}"
+      dbname: "{{ env_var('PIPELINE_DB_NAME', 'weather') }}"
+      schema: public
+      threads: 4

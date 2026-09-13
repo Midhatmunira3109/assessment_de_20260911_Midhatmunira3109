@@ -1,0 +1,6 @@
+# Extra packages added to Airflow's own Python env.
+# NOTE: dbt-postgres is installed in a separate /opt/dbt-venv — do NOT add it here.
+# NOTE: pandas and apache-airflow-providers-postgres are already in the Airflow base image.
+requests==2.31.0
+psycopg2-binary==2.9.9
+python-dotenv==1.0.1
